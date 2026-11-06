@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Terdistribusi - UTS Mastery Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            teal: '#14b8a6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                            cyan: '#06b6d4',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #6366f1;
+            color: #818cf8;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- TOP HEADER NAVBAR -->
+    <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid font-mono fa-network-wired"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-indigo-300">
+                        Distributed Systems <span class="text-indigo-400 font-mono text-xs px-2 py-0.5 rounded bg-indigo-950 border border-indigo-800 ml-1">UTS 4th Ed.</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Interactive Exam Mastery Platform based on Tanenbaum Curriculum</p>
+                </div>
+            </div>
+
+            <!-- Quick Stats & Actions -->
+            <div class="flex items-center gap-4 text-xs">
+                <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    <span>Skor Kuis: <strong id="global-score-display" class="text-indigo-400">0/15</strong></span>
+                </div>
+                <button onclick="openDeployModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Deploy & Export</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN TABS NAVIGATION -->
+        <nav class="flex overflow-x-auto max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/80 text-sm font-medium scrollbar-none">
+            <button onclick="switchTab('materi')" id="tab-btn-materi" class="tab-btn active px-4 py-3 whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-indigo-400"></i> 1. Ringkasan Kisi-kisi (Fast Track)
+            </button>
+            <button onclick="switchTab('kuis')" id="tab-btn-kuis" class="tab-btn px-4 py-3 whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-graduation-cap text-cyan-400"></i> 2. Kuis Skenario UTS (15+ Soal)
+            </button>
+            <button onclick="switchTab('clock')" id="tab-btn-clock" class="tab-btn px-4 py-3 whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-clock text-emerald-400"></i> 3. Simulator Vector & Lamport Clock
+            </button>
+            <button onclick="switchTab('chord')" id="tab-btn-chord" class="tab-btn px-4 py-3 whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-circle-nodes text-amber-400"></i> 4. Finger Table Chord DHT
+            </button>
+            <button onclick="switchTab('consistency')" id="tab-btn-consistency" class="tab-btn px-4 py-3 whitespace-nowrap text-slate-300 hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-arrows-split-up-and-left text-rose-400"></i> 5. Penganalisis Konsistensi
+            </button>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ==================== TAB 1: RINGKASAN MATERI (FAST TRACK) ==================== -->
+        <section id="tab-materi" class="tab-content space-y-6">
+            <!-- Filter Search -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                <div class="relative w-full md:w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="materi-search" oninput="filterMateri()" placeholder="Cari topik (misal: vector clock, REST, container)..." class="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-indigo-500 text-slate-200">
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="px-2.5 py-1 bg-slate-800 rounded-md border border-slate-700">7 Topik UTS</span>
+                    <span class="px-2.5 py-1 bg-slate-800 rounded-md border border-slate-700">Buku Tanenbaum 4th Ed.</span>
+                </div>
+            </div>
+
+            <!-- Grid 7 Kisi-kisi Topik -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="materi-grid">
+
+                <!-- Topik 1 -->
+                <div class="materi-card bg-slate-900 border border-slate-800 hover:border-indigo-500/40 rounded-xl p-5 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono font-semibold text-indigo-400 bg-indigo-950 px-2.5 py-1 rounded border border-indigo-800/60">TOPIK 1</span>
+                            <i class="fa-solid fa-cubes text-indigo-400"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-white mb-2">Teori Dasar & Skalabilitas</h3>
+                        <p class="text-xs text-slate-400 mb-4">Centralized vs Decentralized vs Distributed, 3 Skalabilitas, 6 Transparansi.</p>
+                        
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-indigo-300 block mb-1">Arsitektur:</strong>
+                                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Centralized:</b> Single point of control & failure.</li>
+                                    <li><b class="text-slate-200">Decentralized:</b> Tidak ada kontrol tunggal, node sejajar (P2P).</li>
+                                    <li><b class="text-slate-200">Distributed:</b> Kumpulan komputer independen yang tampak sebagai 1 sistem tunggal yang koheren.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-indigo-300 block mb-1">3 Dimensi Skalabilitas:</strong>
+                                <span>1. Size (Ukuran pengguna) | 2. Geographical (Latensi lokasi) | 3. Administrative (Lintas organisasi).</span>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-indigo-300 block mb-1">Transparansi Kunci:</strong>
+                                <span>Access, Location, Relocation/Migration, Replication, Concurrency, Failure.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topik 2 -->
+                <div class="materi-card bg-slate-900 border border-slate-800 hover:border-cyan-500/40 rounded-xl p-5 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono font-semibold text-cyan-400 bg-cyan-950 px-2.5 py-1 rounded border border-cyan-800/60">TOPIK 2</span>
+                            <i class="fa-solid fa-sitemap text-cyan-400"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-white mb-2">Gaya Arsitektur Komunikasi</h3>
+                        <p class="text-xs text-slate-400 mb-4">RESTful Architecture vs Publish-Subscribe & Decoupling.</p>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-cyan-300 block mb-1">RESTful Architecture:</strong>
+                                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Resource-Oriented:</b> Diakses via URI unik (misal `/api/users/12`).</li>
+                                    <li><b class="text-slate-200">Stateless:</b> Server tidak menyimpan state sesi client. Setiap request membawa context lengkap.</li>
+                                    <li><b class="text-slate-200">Standard Verbs:</b> GET, POST, PUT, DELETE.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-cyan-300 block mb-1">Publish-Subscribe (Pub/Sub):</strong>
+                                <p class="text-slate-400 mb-1">Komunikasi berbasis Event via Broker.</p>
+                                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Space Decoupling:</b> Publisher & Subscriber tidak perlu tahu IP/identitas lawan.</li>
+                                    <li><b class="text-slate-200">Time Decoupling:</b> Publisher & Subscriber tidak wajib online bersamaan.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topik 3 -->
+                <div class="materi-card bg-slate-900 border border-slate-800 hover:border-emerald-500/40 rounded-xl p-5 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono font-semibold text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded border border-emerald-800/60">TOPIK 3</span>
+                            <i class="fa-solid fa-box-archive text-emerald-400"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-white mb-2">Proses & Virtualisasi</h3>
+                        <p class="text-xs text-slate-400 mb-4">Process vs Thread, Container, Namespaces & cgroups.</p>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-emerald-300 block mb-1">Process vs Thread:</strong>
+                                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Proses:</b> Memiliki memori terisolasi. Context switch berat.</li>
+                                    <li><b class="text-slate-200">Thread:</b> Berbagi memori dalam 1 proses. Context switch sangat ringan & cepat.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-emerald-300 block mb-1">Containerization (OS-Level Virtualization):</strong>
+                                <p class="text-slate-400 mb-1">Berbagi Host Kernel OS (lebih ringan dibanding VM full OS).</p>
+                                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Namespaces:</b> Mengisolasi tampilan resource (PID, Network, Mount).</li>
+                                    <li><b class="text-slate-200">cgroups:</b> Membatasi kuota penggunaan hardware (CPU, RAM, Disk I/O).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topik 4 -->
+                <div class="materi-card bg-slate-900 border border-slate-800 hover:border-amber-500/40 rounded-xl p-5 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono font-semibold text-amber-400 bg-amber-950 px-2.5 py-1 rounded border border-amber-800/60">TOPIK 4</span>
+                            <i class="fa-solid fa-code-branch text-amber-400"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-white mb-2">Komunikasi Remote (RPC)</h3>
+                        <p class="text-xs text-slate-400 mb-4">RPC, Stubs, Marshaling & Unmarshaling.</p>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-amber-300 block mb-1">Prinsip RPC:</strong>
+                                <p class="text-slate-400">Memberikan transparansi lokasi (*location transparency*) agar pemanggilan fungsi jarak jauh terasa seperti fungsi lokal biasa.</p>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-amber-300 block mb-1">Alur RPC & Stub:</strong>
+                                <ol class="list-decimal list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Client Stub:</b> Mengemas nama fungsi & argumen menjadi bentuk biner/pesan (<i class="text-amber-300">Marshaling</i>).</li>
+                                    <li><b class="text-slate-200">Network Transport:</b> Mengirim paket via socket.</li>
+                                    <li><b class="text-slate-200">Server Stub:</b> Pembongkaran pesan biner menjadi parameter asli (<i class="text-amber-300">Unmarshaling</i>) & mengeksekusi fungsi server.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topik 5 -->
+                <div class="materi-card bg-slate-900 border border-slate-800 hover:border-rose-500/40 rounded-xl p-5 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono font-semibold text-rose-400 bg-rose-950 px-2.5 py-1 rounded border border-rose-800/60">TOPIK 5</span>
+                            <i class="fa-solid fa-clock text-rose-400"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-white mb-2">Sinkronisasi Jam Logis</h3>
+                        <p class="text-xs text-slate-400 mb-4">Lamport Logical Clock vs Vector Clock.</p>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-rose-300 block mb-1">Lamport Clock:</strong>
+                                <p class="text-slate-400 mb-1">Event lokal: $L_i = L_i + 1$. Pesan kirim bawa $t = L_i$. Terima pesan: $L_j = \max(L_j, t) + 1$.</p>
+                                <p class="text-rose-400 font-semibold text-[11px]">⚠️ Kelemahan: $L(a) < L(b)$ TIDAK menjamin $a \to b$ (bisa jadi konkuren).</p>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-rose-300 block mb-1">Vector Clock (Mendeteksi Konkurensi):</strong>
+                                <p class="text-slate-400 mb-1">Setiap node menyimpan array $V_i[1..N]$. Terima: $V_j[k] = \max(V_j[k], V_{msg}[k])$, lalu $V_j[j]++$.</p>
+                                <p class="text-emerald-400 font-semibold text-[11px]">Kondisi Konkuren: Event $a \parallel b \iff V(a) \not\le V(b) \land V(b) \not\le V(a)$.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topik 6 -->
+                <div class="materi-card bg-slate-900 border border-slate-800 hover:border-purple-500/40 rounded-xl p-5 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-mono font-semibold text-purple-400 bg-purple-950 px-2.5 py-1 rounded border border-purple-800/60">TOPIK 6</span>
+                            <i class="fa-solid fa-hashtag text-purple-400"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-white mb-2">Penamaan & Chord DHT</h3>
+                        <p class="text-xs text-slate-400 mb-4">Identitas, Consistent Hashing & Finger Table Chord.</p>
+
+                        <div class="space-y-3 text-xs text-slate-300">
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-purple-300 block mb-1">Name vs Address vs Identifier:</strong>
+                                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                    <li><b class="text-slate-200">Name:</b> Human-readable (misal `google.com`).</li>
+                                    <li><b class="text-slate-200">Address:</b> Lokasi titik akses entitas (IP Address).</li>
+                                    <li><b class="text-slate-200">Identifier:</b> Unik persis 1:1, tak pernah diubah atau digunakan ulang.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                <strong class="text-purple-300 block mb-1">Chord DHT ($2^m$ Ring):</strong>
+                                <p class="text-slate-400 mb-1">Key $k$ disimpan di node pertama $\ge k$ yaitu $\text{successor}(k)$.</p>
+                                <p class="font-mono text-purple-300 text-[11px] bg-slate-900 p-1.5 rounded border border-slate-800">Finger[i] = successor((n + 2^(i-1)) mod 2^m)</p>
+                                <p class="text-slate-400 text-[11px] mt-1">Kompleksitas pencarian lookup: $O(\log N)$ hops.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topik 7 -->
+                <div class="materi-card md:col-span-2 lg:col-span-3 bg-slate-900 border border-slate-800 hover:border-indigo-500/40 rounded-xl p-5 transition">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-mono font-semibold text-indigo-400 bg-indigo-950 px-2.5 py-1 rounded border border-indigo-800/60">TOPIK 7</span>
+                        <i class="fa-solid fa-database text-indigo-400"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-white mb-2">Model Konsistensi Replikasi (Data-Centric)</h3>
+                    <p class="text-xs text-slate-400 mb-4">Sequential Consistency vs Causal Consistency (Perbandingan Analisis Trace).</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                            <h4 class="font-bold text-indigo-300 text-sm mb-2">1. Sequential Consistency (Sekuensial)</h4>
+                            <p class="text-slate-300 mb-2">Seluruh operasi Read & Write dari semua node harus tampak berjalan dalam <strong class="text-white">satu urutan sekuensial global yang sama persis</strong> di seluruh proses, dan sesuai dengan urutan program lokal masing-masing node.</p>
+                            <div class="bg-slate-900 p-2.5 rounded font-mono text-[11px] border border-slate-800 space-y-1">
+                                <p class="text-emerald-400">VALID Contoh Trace Sekuensial:</p>
+                                <p class="text-slate-300">P1: W(x)a</p>
+                                <p class="text-slate-300">P2: W(x)b</p>
+                                <p class="text-slate-300">P3: R(x)b  R(x)a   (Urutan global: W(x)b -> R(x)b -> W(x)a -> R(x)a)</p>
+                                <p class="text-slate-300">P4: R(x)b  R(x)a   (Semua node melihat b DULU baru a!)</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                            <h4 class="font-bold text-cyan-300 text-sm mb-2">2. Causal Consistency (Kausal)</h4>
+                            <p class="text-slate-300 mb-2">Hanya operasi Write yang <strong class="text-white">terhubung secara kausal</strong> ($a \to b$) yang wajib dilihat dalam urutan yang sama oleh semua node. Write yang <strong class="text-white">konkuren</strong> boleh dilihat dalam urutan berbeda.</p>
+                            <div class="bg-slate-900 p-2.5 rounded font-mono text-[11px] border border-slate-800 space-y-1">
+                                <p class="text-cyan-400">VALID Kausal tapi INVALID Sekuensial:</p>
+                                <p class="text-slate-300">P1: W(x)a  (Konkuren dengan W(x)b)</p>
+                                <p class="text-slate-300">P2: W(x)b  (Konkuren dengan W(x)a)</p>
+                                <p class="text-slate-300">P3: R(x)a  R(x)b</p>
+                                <p class="text-slate-300">P4: R(x)b  R(x)a   (Boleh beda urutan karena W(a) & W(b) konkuren!)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: KUIS SKENARIO UTS ==================== -->
+        <section id="tab-kuis" class="tab-content hidden space-y-6">
+            <!-- Header Kuis & Filter Topic -->
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-cyan-400"></i>
+                        Simulasi Kuis Skenario UTS
+                    </h2>
+                    <p class="text-xs text-slate-400">Soal berbasis studi kasus sesuai kisi-kisi dengan penjelasan logika tingkat tinggi.</p>
+                </div>
+                
+                <!-- Filter Buttons -->
+                <div class="flex flex-wrap items-center gap-1.5" id="topic-filter-container">
+                    <button onclick="filterQuiz(0)" class="quiz-topic-btn active bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">Semua Topik</button>
+                    <button onclick="filterQuiz(1)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T1: Dasar</button>
+                    <button onclick="filterQuiz(2)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T2: Arsitektur</button>
+                    <button onclick="filterQuiz(3)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T3: Proses</button>
+                    <button onclick="filterQuiz(4)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T4: RPC</button>
+                    <button onclick="filterQuiz(5)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T5: Jam</button>
+                    <button onclick="filterQuiz(6)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T6: Chord</button>
+                    <button onclick="filterQuiz(7)" class="quiz-topic-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg transition">T7: Konsistensi</button>
+                </div>
+            </div>
+
+            <!-- Quiz Main Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl relative" id="quiz-card">
+                <!-- Progress & Meta -->
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <span id="quiz-badge-topic" class="text-xs font-mono px-2.5 py-1 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">Topik 1</span>
+                        <span id="quiz-number-text" class="text-xs text-slate-400 font-semibold">Soal 1 dari 15</span>
+                    </div>
+                    <button onclick="resetQuizProgress()" class="text-xs text-slate-400 hover:text-rose-400 transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Skor
+                    </button>
+                </div>
+
+                <!-- Scenario Question Text -->
+                <div class="mb-6">
+                    <h3 id="quiz-question-title" class="text-base sm:text-lg font-semibold text-white leading-relaxed mb-2">
+                        <!-- Dynamic Question -->
+                    </h3>
+                    <div id="quiz-code-block" class="hidden bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-indigo-300 my-3 whitespace-pre-wrap"></div>
+                </div>
+
+                <!-- Answer Options -->
+                <div id="quiz-options-container" class="space-y-3 mb-6">
+                    <!-- Options generated via JS -->
+                </div>
+
+                <!-- Deep Dive Explanation Box (Hidden initially) -->
+                <div id="quiz-explanation-box" class="hidden bg-slate-950 border border-slate-800 rounded-xl p-5 mb-6 text-sm">
+                    <div class="flex items-center gap-2 mb-2 font-bold" id="explanation-status-header">
+                        <!-- Status icon & text -->
+                    </div>
+                    <p id="explanation-text" class="text-slate-300 text-xs leading-relaxed"></p>
+                </div>
+
+                <!-- Quiz Navigation Buttons -->
+                <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+                    <button onclick="prevQuizQuestion()" id="btn-prev-quiz" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg font-medium transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="shuffleCurrentQuiz()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg font-medium transition" title="Acak Soal">
+                            <i class="fa-solid fa-shuffle"></i>
+                        </button>
+                        <button onclick="nextQuizQuestion()" id="btn-next-quiz" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs rounded-lg font-medium transition flex items-center gap-2">
+                            Selanjutnya <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: SIMULATOR VECTOR & LAMPORT CLOCK ==================== -->
+        <section id="tab-clock" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-emerald-400"></i>
+                        Simulator Jam Logis & Jam Vektor Interaktif
+                    </h2>
+                    <p class="text-xs text-slate-400">Tambahkan event lokal atau kirim pesan antar 3 node (P1, P2, P3) untuk melihat perhitungan Vector Clock & Lamport Clock secara otomatis.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="resetClockSimulation()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-lg text-slate-300 transition">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Reset Timeline
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Timeline Canvas / Visualizer -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Controls Panel -->
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-sm text-white border-b border-slate-800 pb-2">Aksi Kejadian (Event Builder)</h3>
+
+                    <!-- Action Selection -->
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Pilih Node Pengirim / Event:</label>
+                        <select id="clock-process-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-white">
+                            <option value="0">Process P1</option>
+                            <option value="1">Process P2</option>
+                            <option value="2">Process P3</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Tipe Aksi:</label>
+                        <select id="clock-action-type" onchange="toggleClockActionParams()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-white">
+                            <option value="local">Event Lokal (Local Tick)</option>
+                            <option value="send">Kirim Pesan ke Node Lain</option>
+                        </select>
+                    </div>
+
+                    <div id="clock-target-container" class="hidden">
+                        <label class="block text-xs text-slate-400 mb-1">Tujuan Pesan:</label>
+                        <select id="clock-target-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-white">
+                            <!-- Filled dynamically -->
+                        </select>
+                    </div>
+
+                    <button onclick="addClockEvent()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
+                        <i class="fa-solid fa-plus"></i> Tambah Event Ke Timeline
+                    </button>
+
+                    <!-- Verification Mode Challenge -->
+                    <div class="mt-6 pt-4 border-t border-slate-800 bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-2">
+                        <h4 class="font-bold text-xs text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-brain"></i> Uji Tebak Vector Clock
+                        </h4>
+                        <p class="text-[11px] text-slate-400">Pilih salah satu event pada timeline lalu tebak nilai Vector Clock-nya:</p>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="vclock-guess-input" placeholder="misal: 1,2,0" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white">
+                            <button onclick="verifyVectorClockGuess()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1 rounded font-medium">Cek</button>
+                        </div>
+                        <p id="vclock-guess-result" class="text-[11px] font-semibold hidden"></p>
+                    </div>
+                </div>
+
+                <!-- Visual Diagram Area -->
+                <div class="lg:col-span-2 bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-between min-h-[400px]">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-sm text-white">Visualisasi Diagram Garis Waktu (Space-Time Diagram)</h3>
+                            <div class="flex items-center gap-3 text-[11px]">
+                                <span class="flex items-center gap-1 text-indigo-400"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> Vektor: [V1, V2, V3]</span>
+                                <span class="flex items-center gap-1 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Lamport: L</span>
+                            </div>
+                        </div>
+
+                        <!-- SVG Timeline Renderer Container -->
+                        <div id="clock-timeline-svg-container" class="w-full overflow-x-auto bg-slate-950 rounded-xl p-4 border border-slate-800">
+                            <!-- SVG rendered via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Selected Event Details -->
+                    <div id="event-detail-box" class="mt-4 p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+                        <span>Klik salah satu bulatan event pada diagram untuk melihat detail kausalitasnya.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: FINGER TABLE CHORD DHT ==================== -->
+        <section id="tab-chord" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-circle-nodes text-amber-400"></i>
+                        Kalkulator & Simulator Finger Table Chord DHT
+                    </h2>
+                    <p class="text-xs text-slate-400">Hitung nilai Finger Table $(n + 2^{i-1}) \pmod{2^m}$ dan urutan routing lookup key secara presisi.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Inputs & Controls -->
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-sm text-white border-b border-slate-800 pb-2">Konfigurasi Ring Chord</h3>
+                    
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Jumlah Bit ($m$):</label>
+                        <select id="chord-m-bits" onchange="calculateChord()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-white font-mono">
+                            <option value="3">m = 3 (Ukuran Ring 2^3 = 8)</option>
+                            <option value="4" selected>m = 4 (Ukuran Ring 2^4 = 16)</option>
+                            <option value="5">m = 5 (Ukuran Ring 2^5 = 32)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Daftar Node Aktif (pisahkan koma):</label>
+                        <input type="text" id="chord-active-nodes" value="1, 4, 9, 11, 14" oninput="calculateChord()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-white font-mono" placeholder="misal: 1, 4, 9, 14">
+                        <span class="text-[10px] text-slate-500 mt-1 block">Semua node harus dalam rentang $0$ s.d $2^m - 1$.</span>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800">
+                        <label class="block text-xs text-amber-300 font-semibold mb-1">Pilih Node Untuk Melihat Finger Table:</label>
+                        <select id="chord-selected-node" onchange="renderFingerTableDetails()" class="w-full bg-slate-950 border border-slate-700 rounded-lg text-xs p-2.5 text-white font-mono">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+
+                    <!-- Key Routing Simulator -->
+                    <div class="pt-4 border-t border-slate-800 bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-2">
+                        <h4 class="font-bold text-xs text-cyan-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-route"></i> Simulasi Lookup Key
+                        </h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <label class="text-[10px] text-slate-400">Node Asal:</label>
+                                <select id="lookup-start-node" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white font-mono"></select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400">Key Dicari ($k$):</label>
+                                <input type="number" id="lookup-target-key" value="13" class="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white font-mono">
+                            </div>
+                        </div>
+                        <button onclick="simulateChordLookup()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 rounded font-medium transition">
+                            Cari Key (Simulasi Hops)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Visual Ring & Finger Table Result -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Ring Canvas & Table Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-5 rounded-xl border border-slate-800">
+                        <!-- SVG Ring -->
+                        <div class="flex flex-col items-center justify-center">
+                            <h4 class="font-bold text-xs text-slate-300 mb-2">Visual Ring Identitas Chord</h4>
+                            <div id="chord-ring-svg-container" class="w-full flex items-center justify-center min-h-[220px]">
+                                <!-- SVG via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Finger Table Output -->
+                        <div>
+                            <h4 class="font-bold text-xs text-amber-300 mb-2 flex items-center justify-between">
+                                <span>Finger Table Node <span id="finger-table-node-id" class="font-mono text-white text-sm">N</span></span>
+                                <span class="text-[10px] text-slate-400 font-normal">Formula: $(n + 2^{i-1}) \pmod{2^m}$</span>
+                            </h4>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs font-mono border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                                            <th class="p-2">i</th>
+                                            <th class="p-2">Start: $(n + 2^{i-1})$</th>
+                                            <th class="p-2">Interval</th>
+                                            <th class="p-2 text-amber-400">Successor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="finger-table-body" class="divide-y divide-slate-800 text-slate-300">
+                                        <!-- JS population -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lookup Routing Trace Log -->
+                    <div id="chord-lookup-log-box" class="hidden bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <h4 class="font-bold text-xs text-cyan-400 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-list-ol"></i> Trace Langkah Hops Pencarian Lookup
+                        </h4>
+                        <div id="chord-lookup-steps" class="space-y-2 text-xs font-mono"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 5: PENGANALISIS KONSISTENSI ==================== -->
+        <section id="tab-consistency" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-split-up-and-left text-rose-400"></i>
+                        Penganalisis Model Konsistensi Replikasi
+                    </h2>
+                    <p class="text-xs text-slate-400">Uji trace operasi Read/Write untuk menentukan apakah trace memenuhi Konsistensi Sekuensial atau Konsistensi Kausal.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Trace Presets & Custom Builder -->
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="font-bold text-sm text-white border-b border-slate-800 pb-2">Pilih Contoh Trace / Kuis Soal</h3>
+
+                    <div class="space-y-2">
+                        <button onclick="loadConsistencyPreset(1)" class="w-full text-left bg-slate-950 hover:bg-slate-800 p-3 rounded-lg border border-slate-800 transition">
+                            <span class="text-xs font-bold text-emerald-400 block">Skenario 1: Valid Sekuensial & Kausal</span>
+                            <span class="text-[11px] text-slate-400">P1: W(x)a | P2: R(x)a W(x)b | P3: R(x)a R(x)b</span>
+                        </button>
+
+                        <button onclick="loadConsistencyPreset(2)" class="w-full text-left bg-slate-950 hover:bg-slate-800 p-3 rounded-lg border border-slate-800 transition">
+                            <span class="text-xs font-bold text-cyan-400 block">Skenario 2: Valid Kausal, INVALID Sekuensial</span>
+                            <span class="text-[11px] text-slate-400">P1: W(x)a | P2: W(x)b | P3: R(x)b R(x)a | P4: R(x)a R(x)b</span>
+                        </button>
+
+                        <button onclick="loadConsistencyPreset(3)" class="w-full text-left bg-slate-950 hover:bg-slate-800 p-3 rounded-lg border border-slate-800 transition">
+                            <span class="text-xs font-bold text-rose-400 block">Skenario 3: Pelanggaran Kausalitas (INVALID Both)</span>
+                            <span class="text-[11px] text-slate-400">P1: W(x)a | P2: R(x)a W(x)b | P3: R(x)b R(x)a</span>
+                        </button>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800">
+                        <label class="block text-xs text-slate-400 mb-1">Editor Kode Trace Custom:</label>
+                        <textarea id="consistency-trace-input" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 font-mono text-xs text-indigo-300 focus:outline-none focus:border-indigo-500">
+P1: W(x)a
+P2: R(x)a W(x)b
+P3: R(x)b R(x)a
+                        </textarea>
+                    </div>
+
+                    <button onclick="analyzeConsistencyTrace()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs py-2.5 rounded-lg transition shadow-lg shadow-rose-600/20">
+                        Jalankan Analisis Logika
+                    </button>
+                </div>
+
+                <!-- Analysis Results Panel -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Results Card -->
+                    <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-5">
+                        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                            <i class="fa-solid fa-microchip text-indigo-400"></i> Hasil Penilaian Model Konsistensi
+                        </h3>
+
+                        <!-- Badges Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Sequential Verdict -->
+                            <div id="verdict-sequential-box" class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-medium block">Sequential Consistency</span>
+                                    <strong id="verdict-sequential-text" class="text-base font-bold text-slate-200">Belum dianalisis</strong>
+                                </div>
+                                <div id="verdict-sequential-icon" class="text-2xl text-slate-600">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </div>
+                            </div>
+
+                            <!-- Causal Verdict -->
+                            <div id="verdict-causal-box" class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-medium block">Causal Consistency</span>
+                                    <strong id="verdict-causal-text" class="text-base font-bold text-slate-200">Belum dianalisis</strong>
+                                </div>
+                                <div id="verdict-causal-icon" class="text-2xl text-slate-600">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step-by-Step Logic Breakdown -->
+                        <div class="space-y-3 pt-4 border-t border-slate-800">
+                            <h4 class="font-bold text-xs text-indigo-300">Penjelasan Logika Terperinci:</h4>
+                            <div id="consistency-explanation-content" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2">
+                                Klik tombol "Jalankan Analisis Logika" untuk memeriksa trace di atas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-auto text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3">
+            <p>© 2026 Distributed Systems UTS Mastery Hub — Berdasarkan Kurikulum Distributed Systems 4th Edition (Andrew S. Tanenbaum / Maarten van Steen).</p>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span><i class="fa-solid fa-check text-emerald-400 mr-1"></i> Interactive Simulators</span>
+                <span><i class="fa-solid fa-shield text-indigo-400 mr-1"></i> Exam Ready</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DEPLOY & EXPORT -->
+    <div id="deploy-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-lg w-full space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-indigo-400"></i> Petunjuk Deployment Web
+                </h3>
+                <button onclick="closeDeployModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                    <strong class="text-indigo-300 block mb-1">Opsi A: GitHub Pages (Gratis & Cepat)</strong>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-400">
+                        <li>Simpan kode web ini sebagai file <code class="text-emerald-400">index.html</code>.</li>
+                        <li>Buat Repository baru di GitHub.</li>
+                        <li>Upload file <code class="text-emerald-400">index.html</code> ke branch <code class="text-slate-200">main</code>.</li>
+                        <li>Buka Settings repository → Pages → pilih Source: main branch → Save!</li>
+                    </ol>
+                </div>
+
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                    <strong class="text-cyan-300 block mb-1">Opsi B: Streamlit Web Embed</strong>
+                    <p class="text-slate-400 mb-1">Buat file Python <code class="text-cyan-300">app.py</code> di Streamlit:</p>
+                    <pre class="bg-slate-900 p-2 rounded text-[11px] font-mono text-indigo-300">import streamlit as st
+
+st.set_page_config(layout="wide")
+with open("index.html", "r") as f:
+    html_code = f.read()
+
+st.components.v1.html(html_code, height=900, scrolling=True)</pre>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button onclick="downloadHTMLFile()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-download"></i> Unduh File HTML Ini
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        /* ==================== GLOBAL APP STATE ==================== */
+        const state = {
+            currentTab: 'materi',
+            quizScore: 0,
+            activeTopicFilter: 0,
+            currentQuestionIdx: 0,
+            userAnswers: {},
+            
+            // Clock Simulator State
+            clockEvents: [], // Array of event objects
+            pendingMessages: [],
+            
+            // Chord State
+            chordM: 4,
+            chordActiveNodes: [1, 4, 9, 11, 14],
+            chordFingerTables: {}
+        };
+
+        /* ==================== 15 UTS CASE-BASED QUIZ DATA ==================== */
+        const quizData = [
+            // Topik 1
+            {
+                id: 1,
+                topic: 1,
+                topicName: "Topik 1: Dasar & Skalabilitas",
+                question: "Sebuah aplikasi E-Commerce global mengalami kenaikan trafik berlipat ganda saat Midnight Sale. Sistem menambah 50 instance server baru di Cloud AWS tanpa mengganggu transaksi pengguna yang sedang berjalan, dan lokasi server disembunyikan dari aplikasi Klien. Karakteristik transparansi & skalabilitas apa yang terpenuhi?",
+                code: null,
+                options: [
+                    "Migration Transparency dan Administrative Scalability",
+                    "Location Transparency dan Size Scalability",
+                    "Access Transparency dan Geographical Scalability",
+                    "Failure Transparency dan Relocation Transparency"
+                ],
+                answer: 1,
+                explanation: "Menyembunyikan lokasi fisik server tempat sumber daya berada adalah definisi **Location Transparency**. Kemampuan sistem untuk menambah kapasitas komputasi (server) untuk menangani lonjakan pengguna tanpa penurunan kinerja adalah **Size Scalability**."
+            },
+            {
+                id: 2,
+                topic: 1,
+                topicName: "Topik 1: Dasar & Skalabilitas",
+                question: "Manakah dari pernyataan berikut yang merupakan perbedaan mendasar antara sistem Terdesentralisasi (Decentralized) dan sistem Terdistribusi (Distributed)?",
+                code: null,
+                options: [
+                    "Sistem Terdesentralisasi tidak memiliki satu titik kendali tunggal (no single point of control), sedangkan sistem Terdistribusi menyajikan kumpulan node komputer independen agar tampak sebagai satu sistem tunggal yang koheren bagi pengguna.",
+                    "Sistem Terdistribusi selalu berada dalam 1 jaringan LAN lokal, sedangkan Terdesentralisasi harus menggunakan internet global.",
+                    "Sistem Terdesentralisasi tidak pernah mengalami kegagalan node.",
+                    "Sistem Terdistribusi tidak membutuhkan koordinasi middleware."
+                ],
+                answer: 0,
+                explanation: "Definisi kunci menurut Tanenbaum: Sistem Terdistribusi adalah kumpulan komputer independen yang terlihat oleh pengguna sebagai **satu sistem tunggal yang koheren**. Sistem Terdesentralisasi berfokus pada **pembagian otoritas/kontrol** tanpa bergantung pada satu server pusat tunggal."
+            },
+
+            // Topik 2
+            {
+                id: 3,
+                topic: 2,
+                topicName: "Topik 2: Arsitektur Komunikasi",
+                question: "Sistem IoT pemantau suhu ruangan menggunakan arsitektur Publish-Subscribe via MQTT Broker. Sensor suhu (Publisher) mempublikasikan data tanpa perlu mengetahui alamat IP dari aplikasi Dashboard Monitor (Subscriber), dan Subscriber bisa menerima data walau baru aktif 1 jam kemudian. Jenis decoupling apa yang diterapkan?",
+                code: null,
+                options: [
+                    "Hanya Space Decoupling",
+                    "Hanya Time Decoupling",
+                    "Space Decoupling dan Time Decoupling sekaligus",
+                    "Process Decoupling dan Network Decoupling"
+                ],
+                answer: 2,
+                explanation: "Publisher & Subscriber tidak perlu mengetahui identitas/alamat IP satu sama lain = **Space Decoupling**. Publisher & Subscriber tidak perlu aktif pada waktu yang bersamaan = **Time Decoupling**."
+            },
+            {
+                id: 4,
+                topic: 2,
+                topicName: "Topik 2: Arsitektur Komunikasi",
+                question: "Mengapa arsitektur RESTful mewajibkan komunikasi bersifat Stateless?",
+                code: null,
+                options: [
+                    "Agar server dapat menyimpan sesi login pengguna di memori RAM server pusat.",
+                    "Agar setiap request dari client membawa seluruh data kontekstual yang diperlukan, sehingga server tidak perlu menyimpan sesi client dan request dapat diarahkan ke server mana pun secara independen (memudahkan horizontal scaling).",
+                    "Agar tidak membutuhkan jaringan TCP/IP.",
+                    "Agar komunikasi berjalan secara asinkron tanpa menunggu respon HTTP."
+                ],
+                answer: 1,
+                explanation: "Prinsip **Stateless** pada RESTful mewajibkan setiap HTTP Request mengandung semua informasi isolatif yang diperlukan. Server tidak menyimpan *client state* di antara request, membuat pembebanan server (*load balancing*) dan replikasi sangat mudah diskalakan secara horizontal."
+            },
+
+            // Topik 3
+            {
+                id: 5,
+                topic: 3,
+                topicName: "Topik 3: Proses & Virtualisasi",
+                question: "Dalam platform kontainer seperti Docker pada sistem operasi Linux, fitur kernel apa yang bertugas mengisolasi pandangan proses (seperti isolasi PID, Network Interface, & Mount Points) dan fitur apa yang bertugas membatasi kuota CPU/RAM?",
+                code: null,
+                options: [
+                    "Namespaces untuk isolasi tampilan; cgroups (Control Groups) untuk pembatasan resource hardware.",
+                    "cgroups untuk isolasi tampilan; Namespaces untuk pembatasan resource hardware.",
+                    "Hypervisor Type-1 untuk isolasi; KVM untuk pembatasan resource.",
+                    "Kernel Threads untuk isolasi; User Threads untuk pembatasan."
+                ],
+                answer: 0,
+                explanation: "Di Linux Containerization: **Linux Namespaces** mengisolasi apa yang dapat *dilihat* oleh proses (PID, Network, Mount), sedangkan **cgroups (Control Groups)** membatasi berapa banyak resource hardware (CPU, RAM, I/O) yang boleh *digunakan* oleh kontainer."
+            },
+            {
+                id: 6,
+                topic: 3,
+                topicName: "Topik 3: Proses & Virtualisasi",
+                question: "Mengapa pembuatan dan pengalihan konteks (context switching) pada Thread jauh lebih cepat daripada pada Proses?",
+                code: null,
+                options: [
+                    "Karena Thread tidak dieksekusi oleh CPU.",
+                    "Karena beberapa Thread di dalam satu proses yang sama berbagi ruang alamat memori (address space), kode, dan data yang sama, sehingga tidak perlu mereload tabel pemetaan memori виртуал (page tables).",
+                    "Karena Proses tidak memiliki kernel context.",
+                    "Karena Thread selalu berjalan di atas Virtual Machine."
+                ],
+                answer: 1,
+                explanation: "Setiap Proses memiliki ruang memori independen yang terisolasi (*page table*, *descriptor*). Ketika switching antar-proses terjadi, kernel harus mengganti memori virtual. Sebaliknya, Thread dalam proses yang sama **membagi ruang memori yang sama**, sehingga context switch sangat ringan."
+            },
+
+            // Topik 4
+            {
+                id: 7,
+                topic: 4,
+                topicName: "Topik 4: Remote Procedure Call (RPC)",
+                question: "Dalam mekanisme Remote Procedure Call (RPC), proses mengubah struktur data internal/parameter menjadi format byte stream yang siap dikirimkan melalui jaringan TCP/IP disebut sebagai...",
+                code: null,
+                options: [
+                    "Unmarshaling",
+                    "Marshaling (atau Serialization)",
+                    "Remote Binding",
+                    "Context Switching"
+                ],
+                answer: 1,
+                explanation: "**Marshaling** (Serialization) adalah proses membungkus/mengonversi objek atau parameter fungsi berstruktur menjadi urutan bytes (*byte stream*) agar dapat dikirim melalui protokol jaringan. Proses sebaliknya di sisi receiver adalah **Unmarshaling**."
+            },
+            {
+                id: 8,
+                topic: 4,
+                topicName: "Topik 4: Remote Procedure Call (RPC)",
+                question: "Komponen manakah pada RPC di sisi Client yang berpura-pura sebagai prosedur lokal, menerima panggilan dari aplikasi client, lalu melakukan marshaling pesan?",
+                code: null,
+                options: [
+                    "Server Stub",
+                    "Client Stub",
+                    "IDL Compiler",
+                    "Portmap Daemon"
+                ],
+                answer: 1,
+                explanation: "**Client Stub** bertindak sebagai perantara lokal bagi aplikasi Klien. Tugas utamanya adalah menangkap pemanggilan fungsi lokal, me-marshal parameter menjadi paket jaringan, dan mengirimkannya ke runtime jaringan."
+            },
+
+            // Topik 5
+            {
+                id: 9,
+                topic: 5,
+                topicName: "Topik 5: Sinkronisasi Jam Logis",
+                question: "Diberikan dua kejadian $a$ dan $b$ pada sistem terdistribusi dengan Jam Logis Lamport $L(a) = 3$ dan $L(b) = 7$. Apakah kita pasti dapat menyimpulkan bahwa kejadian $a$ menyebabkan kejadian $b$ ($a \\to b$)?",
+                code: null,
+                options: [
+                    "Ya, pasti $a \\to b$ karena $L(a) < L(b)$.",
+                    "Tidak pasti, karena pada Lamport Clock jika $a \\to b$ maka $L(a) < L(b)$, namun kebalikannya ($L(a) < L(b)$) TIDAK selalu berarti $a \\to b$ (bisa saja $a$ dan $b$ konkuren).",
+                    "Ya, karena selisih nilainya lebih dari 2.",
+                    "Pasti salah, nilai Lamport Clock tidak pernah bisa dibandingkan."
+                ],
+                answer: 1,
+                explanation: "Ini adalah **kelemahan mendasar Lamport Logical Clock**: Relasi hanya berlaku satu arah ($a \to b \implies L(a) < L(b)$). Jika $L(a) < L(b)$, kita **tidak bisa** memastikan kausalitas tanpa Vector Clock, karena kejadian tersebut mungkin terjadi secara independen/konkuren."
+            },
+            {
+                id: 10,
+                topic: 5,
+                topicName: "Topik 5: Sinkronisasi Jam Logis",
+                question: "Dua kejadian $e_1$ dan $e_2$ memiliki Vector Clock masing-masing $V(e_1) = [2, 1, 4]$ dan $V(e_2) = [1, 3, 2]$. Bagaimana hubungan kausalitas antara kejadian $e_1$ dan $e_2$?",
+                code: null,
+                options: [
+                    "e1 menyebabkan e2 (e1 -> e2)",
+                    "e2 menyebabkan e1 (e2 -> e1)",
+                    "Kejadian e1 dan e2 bersifat Konkuren (e1 || e2)",
+                    "Terjadi dead-lock kausalitas"
+                ],
+                answer: 2,
+                explanation: "Syarat $V(A) \le V(B)$ adalah SELURUH elemen $V(A)[i] \le V(B)[i]$.\nDi sini $V(e_1)[0] = 2 > 1 = V(e_2)[0]$, namun $V(e_1)[1] = 1 < 3 = V(e_2)[1]$.\nKarena $V(e_1) \not\le V(e_2)$ dan $V(e_2) \not\le V(e_1)$, maka **kedua kejadian bersifat Konkuren ($e_1 \parallel e_2$)**!"
+            },
+
+            // Topik 6
+            {
+                id: 11,
+                topic: 6,
+                topicName: "Topik 6: Penamaan & Chord DHT",
+                question: "Dalam sistem Chord DHT dengan ruang kunci $m = 3$ (ukuran ring $2^3 = 8$, nilai 0..7) dan node aktif yang ada pada ring adalah Node 1, Node 4, dan Node 6. Node manakah yang bertanggung jawab menyimpan kunci data $k = 5$ (yaitu $\\text{successor}(5)$)?",
+                code: null,
+                options: [
+                    "Node 4",
+                    "Node 5",
+                    "Node 6",
+                    "Node 1"
+                ],
+                answer: 2,
+                explanation: "Aturan Consistent Hashing pada Chord DHT: Key $k$ dikelola oleh node pertama yang memiliki ID $\ge k$, yang disebut $\\text{successor}(k)$. Untuk $k = 5$, node aktif pertama yang $\ge 5$ adalah **Node 6**."
+            },
+            {
+                id: 12,
+                topic: 6,
+                topicName: "Topik 6: Penamaan & Chord DHT",
+                question: "Pada Chord DHT dengan $m = 4$ (ring 0..15), berapa entri pertama ($i = 1$) nilai Start untuk Finger Table pada Node $n = 4$?",
+                code: null,
+                options: [
+                    "Start = (4 + 2^0) mod 16 = 5",
+                    "Start = (4 + 2^1) mod 16 = 6",
+                    "Start = (4 + 2^4) mod 16 = 4",
+                    "Start = (4 + 1) mod 4 = 1"
+                ],
+                answer: 0,
+                explanation: "Rumus entri ke-$i$ Finger Table untuk Node $n$: $\\text{Start}_i = (n + 2^{i-1}) \pmod{2^m}$.\nUntuk $i = 1$, $2^{1-1} = 2^0 = 1$.\nMaka $\\text{Start}_1 = (4 + 1) \pmod{16} = 5$."
+            },
+
+            // Topik 7
+            {
+                id: 13,
+                topic: 7,
+                topicName: "Topik 7: Model Konsistensi Replikasi",
+                question: "Diberikan urutan eksekusi berikut:\nP1: W(x)a\nP2: W(x)b\nP3: R(x)b  R(x)a\nP4: R(x)b  R(x)a\nApakah trace tersebut memenuhi Sequential Consistency?",
+                code: null,
+                options: [
+                    "Ya, karena SELURUH proses (P3 dan P4) melihat urutan nilai yang sama persis yaitu 'b' terlebih dahulu kemudian 'a'.",
+                    "Tidak, karena W(x)a dieksekusi lebih dulu oleh P1 daripada W(x)b oleh P2.",
+                    "Tidak, karena P1 dan P2 tidak melakukan Read.",
+                    "Hanya memenuhi Causal Consistency."
+                ],
+                answer: 0,
+                explanation: "Syarat **Sequential Consistency** adalah ada *satu urutan sekuensial global tunggal* yang disepakati bersama oleh semua node. Karena P3 dan P4 keduanya membaca `b` dulu lalu `a` (urutan global: $W(x)b \to R(x)b \to W(x)a \to R(x)a$), urutan ini valid sekuensial!"
+            },
+            {
+                id: 14,
+                topic: 7,
+                topicName: "Topik 7: Model Konsistensi Replikasi",
+                question: "Diberikan trace berikut pada 4 node:\nP1: W(x)a\nP2: R(x)a  W(x)b\nP3: R(x)b  R(x)a\nSebutkan hubungan kausalitas antara W(x)a dan W(x)b, serta apakah trace ini valid secara Kausal?",
+                code: null,
+                options: [
+                    "W(x)a dan W(x)b bersifat konkuren.",
+                    "W(x)a dan W(x)b terhubung Kausal ($W(x)a \\to W(x)b$) karena P2 membaca 'a' SEBELUM menulis 'b'. Oleh karena itu, P3 yang membaca 'b' DULU lalu 'a' MELANGGAR Konsistensi Kausal!",
+                    "Trace ini valid secara Sekuensial dan Kausal.",
+                    "P3 bebas membaca dalam urutan apapun karena beda thread."
+                ],
+                answer: 1,
+                explanation: "P2 membaca nilai `a` hasil $W(x)a$ lalu P2 melakukan $W(x)b$. Ini menciptakan **relasi kausalitas pasti**: $W(x)a \to R(x)a \to W(x)b$. Semua proses WAJIB melihat `a` sebelum `b`. Karena P3 melihat `b` DULU lalu `a`, P3 **melanggar konsistensi kausal**!"
+            },
+            {
+                id: 15,
+                topic: 7,
+                topicName: "Topik 7: Model Konsistensi Replikasi",
+                question: "Apakah perbedaan mendasar antara model Konsistensi Berpusat Data (Data-Centric) dan Berpusat Klien (Client-Centric)?",
+                code: null,
+                options: [
+                    "Data-Centric menjamin konsistensi di seluruh salinan data store global, sedangkan Client-Centric menjamin konsistensi dari sudut pandang satu klien yang berpindah-pindah titik akses (misal: Monotonic Reads, Read-Your-Writes).",
+                    "Data-Centric hanya untuk database SQL, Client-Centric untuk NoSQL.",
+                    "Data-Centric tidak membutuhkan jaringan terdistribusi.",
+                    "Client-Centric selalu lebih ketat daripada Sequential Consistency."
+                ],
+                answer: 0,
+                explanation: "**Data-Centric Consistency** berfokus pada menjaga keselarasan seluruh memori/data store terdistribusi secara internal. **Client-Centric Consistency** berfokus memberikan jaminan konsistensi bagi *individual client* saat mengakses node penyimpanan yang berbeda-beda (seperti *Read-Your-Writes*)."
+            }
+        ];
+
+        /* ==================== TAB NAVIGATION LOGIC ==================== */
+        function switchTab(tabId) {
+            state.currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+
+            // Trigger tab specific renders
+            if (tabId === 'clock') {
+                renderClockTimeline();
+            } else if (tabId === 'chord') {
+                calculateChord();
+            } else if (tabId === 'consistency') {
+                analyzeConsistencyTrace();
+            }
+        }
+
+        /* ==================== TAB 1 MATERI FILTER ==================== */
+        function filterMateri() {
+            const query = document.getElementById('materi-search').value.toLowerCase();
+            const cards = document.querySelectorAll('.materi-card');
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        /* ==================== TAB 2 QUIZ SYSTEM LOGIC ==================== */
+        let filteredQuizIndices = quizData.map((_, idx) => idx);
+
+        function filterQuiz(topicNum) {
+            state.activeTopicFilter = topicNum;
+            document.querySelectorAll('.quiz-topic-btn').forEach(btn => btn.classList.remove('active', 'bg-indigo-600', 'text-white'));
+            
+            // Highlight button
+            event.target.classList.add('active', 'bg-indigo-600', 'text-white');
+
+            if (topicNum === 0) {
+                filteredQuizIndices = quizData.map((_, idx) => idx);
+            } else {
+                filteredQuizIndices = [];
+                quizData.forEach((q, idx) => {
+                    if (q.topic === topicNum) filteredQuizIndices.push(idx);
+                });
+            }
+            state.currentQuestionIdx = 0;
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            if (filteredQuizIndices.length === 0) return;
+            const qIdx = filteredQuizIndices[state.currentQuestionIdx];
+            const q = quizData[qIdx];
+
+            document.getElementById('quiz-badge-topic').innerText = q.topicName;
+            document.getElementById('quiz-number-text').innerText = `Soal ${state.currentQuestionIdx + 1} dari ${filteredQuizIndices.length}`;
+            document.getElementById('quiz-question-title').innerText = q.question;
+
+            const codeBox = document.getElementById('quiz-code-block');
+            if (q.code) {
+                codeBox.innerText = q.code;
+                codeBox.classList.remove('hidden');
+            } else {
+                codeBox.classList.add('hidden');
+            }
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = '';
+
+            const expBox = document.getElementById('quiz-explanation-box');
+            expBox.classList.add('hidden');
+
+            const hasAnswered = state.userAnswers.hasOwnProperty(q.id);
+            const selectedOpt = state.userAnswers[q.id];
+
+            q.options.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm font-medium transition flex items-center justify-between `;
+                
+                if (!hasAnswered) {
+                    btn.className += `bg-slate-950 border-slate-800 text-slate-200 hover:border-indigo-500/50 hover:bg-slate-800/60`;
+                    btn.onclick = () => answerQuiz(q.id, optIdx, q.answer);
+                } else {
+                    if (optIdx === q.answer) {
+                        btn.className += `bg-emerald-950/80 border-emerald-500 text-emerald-200 font-bold`;
+                    } else if (optIdx === selectedOpt) {
+                        btn.className += `bg-rose-950/80 border-rose-500 text-rose-200`;
+                    } else {
+                        btn.className += `bg-slate-950 border-slate-800 text-slate-500 opacity-60`;
+                    }
+                }
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-full border border-slate-700 bg-slate-900 flex items-center justify-center text-xs font-mono font-bold">${String.fromCharCode(65 + optIdx)}</span>
+                        <span>${optText}</span>
+                    </div>
+                    ${hasAnswered && optIdx === q.answer ? '<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>' : ''}
+                    ${hasAnswered && optIdx === selectedOpt && optIdx !== q.answer ? '<i class="fa-solid fa-circle-xmark text-rose-400 text-base"></i>' : ''}
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            if (hasAnswered) {
+                showQuizExplanation(selectedOpt === q.answer, q.explanation);
+            }
+        }
+
+        function answerQuiz(qId, selectedOpt, correctOpt) {
+            state.userAnswers[qId] = selectedOpt;
+            if (selectedOpt === correctOpt) {
+                state.quizScore++;
+            }
+            updateGlobalScoreDisplay();
+            renderQuizQuestion();
+        }
+
+        function showQuizExplanation(isCorrect, expText) {
+            const expBox = document.getElementById('quiz-explanation-box');
+            const header = document.getElementById('explanation-status-header');
+            const textEl = document.getElementById('explanation-text');
+
+            expBox.classList.remove('hidden');
+            if (isCorrect) {
+                header.className = "flex items-center gap-2 text-emerald-400 text-sm font-bold";
+                header.innerHTML = `<i class="fa-solid fa-circle-check"></i> JAWABAN BENAR!`;
+            } else {
+                header.className = "flex items-center gap-2 text-rose-400 text-sm font-bold";
+                header.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> JAWABAN KURANG TEPAT`;
+            }
+            textEl.innerHTML = expText.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+        }
+
+        function nextQuizQuestion() {
+            if (state.currentQuestionIdx < filteredQuizIndices.length - 1) {
+                state.currentQuestionIdx++;
+                renderQuizQuestion();
+            }
+        }
+
+        function prevQuizQuestion() {
+            if (state.currentQuestionIdx > 0) {
+                state.currentQuestionIdx--;
+                renderQuizQuestion();
+            }
+        }
+
+        function shuffleCurrentQuiz() {
+            filteredQuizIndices.sort(() => Math.random() - 0.5);
+            state.currentQuestionIdx = 0;
+            renderQuizQuestion();
+        }
+
+        function resetQuizProgress() {
+            state.userAnswers = {};
+            state.quizScore = 0;
+            updateGlobalScoreDisplay();
+            renderQuizQuestion();
+        }
+
+        function updateGlobalScoreDisplay() {
+            const answeredCount = Object.keys(state.userAnswers).length;
+            document.getElementById('global-score-display').innerText = `${state.quizScore}/${answeredCount} Benar`;
+        }
+
+        /* ==================== TAB 3: VECTOR & LAMPORT CLOCK SIMULATOR ==================== */
+        function initClockSimulator() {
+            state.clockEvents = [
+                { id: 'e1', process: 0, type: 'local', vector: [1,0,0], lamport: 1, label: 'e11' },
+                { id: 'e2', process: 1, type: 'local', vector: [0,1,0], lamport: 1, label: 'e21' },
+                { id: 'e3', process: 0, type: 'send', targetMsg: 'm1', targetProcess: 1, vector: [2,0,0], lamport: 2, label: 'e12' },
+                { id: 'e4', process: 1, type: 'receive', fromMsg: 'm1', vector: [2,2,0], lamport: 3, label: 'e22' }
+            ];
+            renderClockTimeline();
+        }
+
+        function toggleClockActionParams() {
+            const type = document.getElementById('clock-action-type').value;
+            const container = document.getElementById('clock-target-container');
+            const targetSelect = document.getElementById('clock-target-select');
+            const currProc = parseInt(document.getElementById('clock-process-select').value);
+
+            if (type === 'send') {
+                container.classList.remove('hidden');
+                targetSelect.innerHTML = '';
+                [0, 1, 2].forEach(p => {
+                    if (p !== currProc) {
+                        targetSelect.innerHTML += `<option value="${p}">Process P${p+1}</option>`;
+                    }
+                });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function addClockEvent() {
+            const proc = parseInt(document.getElementById('clock-process-select').value);
+            const type = document.getElementById('clock-action-type').value;
+
+            // Get current vector of process
+            const procEvents = state.clockEvents.filter(e => e.process === proc);
+            let lastVec = [0, 0, 0];
+            let lastLamp = 0;
+            if (procEvents.length > 0) {
+                lastVec = [...procEvents[procEvents.length - 1].vector];
+                lastLamp = procEvents[procEvents.length - 1].lamport;
+            }
+
+            // Local increment
+            lastVec[proc]++;
+            lastLamp++;
+
+            const eventId = 'e_' + Date.now();
+            const label = `e${proc+1}${procEvents.length + 1}`;
+
+            if (type === 'local') {
+                state.clockEvents.push({
+                    id: eventId,
+                    process: proc,
+                    type: 'local',
+                    vector: lastVec,
+                    lamport: lastLamp,
+                    label: label
+                });
+            } else if (type === 'send') {
+                const targetProc = parseInt(document.getElementById('clock-target-select').value);
+                
+                // Send Event
+                const sendEvt = {
+                    id: eventId,
+                    process: proc,
+                    type: 'send',
+                    vector: [...lastVec],
+                    lamport: lastLamp,
+                    label: label
+                };
+                state.clockEvents.push(sendEvt);
+
+                // Receive Event on target process
+                const targetProcEvents = state.clockEvents.filter(e => e.process === targetProc);
+                let targetVec = [0, 0, 0];
+                let targetLamp = 0;
+                if (targetProcEvents.length > 0) {
+                    targetVec = [...targetProcEvents[targetProcEvents.length - 1].vector];
+                    targetLamp = targetProcEvents[targetProcEvents.length - 1].lamport;
+                }
+
+                // Recv calculation: max elementwise + increment local
+                const newRecvVec = [
+                    Math.max(sendEvt.vector[0], targetVec[0]),
+                    Math.max(sendEvt.vector[1], targetVec[1]),
+                    Math.max(sendEvt.vector[2], targetVec[2])
+                ];
+                newRecvVec[targetProc]++;
+                const newRecvLamp = Math.max(sendEvt.lamport, targetLamp) + 1;
+
+                state.clockEvents.push({
+                    id: eventId + '_rx',
+                    process: targetProc,
+                    type: 'receive',
+                    fromId: eventId,
+                    vector: newRecvVec,
+                    lamport: newRecvLamp,
+                    label: `e${targetProc+1}${targetProcEvents.length + 1}`
+                });
+            }
+
+            renderClockTimeline();
+        }
+
+        function resetClockSimulation() {
+            state.clockEvents = [];
+            renderClockTimeline();
+        }
+
+        function renderClockTimeline() {
+            const container = document.getElementById('clock-timeline-svg-container');
+            if (!container) return;
+
+            const processes = [0, 1, 2];
+            const width = 650;
+            const height = 220;
+            const marginX = 70;
+            const startY = 40;
+            const lineGap = 60;
+
+            let svgHTML = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="w-full h-auto">`;
+
+            // Draw horizontal process lines
+            processes.forEach((p, idx) => {
+                const y = startY + idx * lineGap;
+                svgHTML += `
+                    <text x="15" y="${y + 5}" fill="#818cf8" font-size="12" font-family="Fira Code" font-weight="bold">P${p+1}</text>
+                    <line x1="${marginX}" y1="${y}" x2="${width - 30}" y2="${y}" stroke="#334155" stroke-width="3" stroke-dasharray="4 4" />
+                `;
+            });
+
+            // Group events per process for positioning
+            const processColumns = [[], [], []];
+            state.clockEvents.forEach(e => {
+                processColumns[e.process].push(e);
+            });
+
+            const maxEventsOnAnyProc = Math.max(1, Math.max(...processColumns.map(c => c.length)));
+            const stepX = (width - marginX - 60) / Math.max(5, maxEventsOnAnyProc);
+
+            // Store calculated positions
+            const eventCoords = {};
+
+            processes.forEach(p => {
+                const events = processColumns[p];
+                events.forEach((evt, idx) => {
+                    const cx = marginX + (idx + 1) * stepX;
+                    const cy = startY + p * lineGap;
+                    eventCoords[evt.id] = { x: cx, y: cy };
+                });
+            });
+
+            // Draw Message Arrows (Send -> Receive)
+            state.clockEvents.forEach(evt => {
+                if (evt.type === 'receive' && evt.fromId && eventCoords[evt.fromId]) {
+                    const src = eventCoords[evt.fromId];
+                    const dst = eventCoords[evt.id];
+                    svgHTML += `
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
+                            </marker>
+                        </defs>
+                        <line x1="${src.x}" y1="${src.y}" x2="${dst.x}" y2="${dst.y}" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)" />
+                    `;
+                }
+            });
+
+            // Draw Event Nodes
+            state.clockEvents.forEach(evt => {
+                const pos = eventCoords[evt.id];
+                if (!pos) return;
+
+                const vStr = `[${evt.vector.join(',')}]`;
+                const lStr = `L:${evt.lamport}`;
+
+                svgHTML += `
+                    <g class="cursor-pointer group" onclick="selectClockEvent('${evt.id}')">
+                        <circle cx="${pos.x}" cy="${pos.y}" r="8" fill="#6366f1" stroke="#ffffff" stroke-width="2" class="group-hover:scale-125 transition-transform" />
+                        <text x="${pos.x}" y="${pos.y - 14}" text-anchor="middle" fill="#6366f1" font-size="10" font-family="Fira Code" font-weight="bold">${vStr}</text>
+                        <text x="${pos.x}" y="${pos.y + 20}" text-anchor="middle" fill="#10b981" font-size="9" font-family="Fira Code">${lStr}</text>
+                    </g>
+                `;
+            });
+
+            svgHTML += `</svg>`;
+            container.innerHTML = svgHTML;
+        }
+
+        function selectClockEvent(evtId) {
+            const evt = state.clockEvents.find(e => e.id === evtId);
+            if (!evt) return;
+            const box = document.getElementById('event-detail-box');
+            box.innerHTML = `
+                <div>
+                    <span class="text-indigo-400 font-mono font-bold">Event ${evt.label} (Node P${evt.process + 1})</span>
+                    <span class="ml-3 text-slate-400">Tipe: <b class="text-white">${evt.type.toUpperCase()}</b></span>
+                </div>
+                <div class="font-mono text-emerald-400">
+                    Vector: [${evt.vector.join(', ')}] | Lamport: ${evt.lamport}
+                </div>
+            `;
+        }
+
+        function verifyVectorClockGuess() {
+            const input = document.getElementById('vclock-guess-input').value.trim();
+            const res = document.getElementById('vclock-guess-result');
+            res.classList.remove('hidden');
+
+            if (state.clockEvents.length === 0) {
+                res.className = "text-[11px] font-semibold text-rose-400";
+                res.innerText = "Tambahkan event terlebih dahulu!";
+                return;
+            }
+
+            const lastEvt = state.clockEvents[state.clockEvents.length - 1];
+            const expectedStr = lastEvt.vector.join(',');
+
+            if (input.replace(/\s+/g, '') === expectedStr) {
+                res.className = "text-[11px] font-semibold text-emerald-400";
+                res.innerText = `✅ TEPAT SEKALI! Vector Clock event terakhir adalah [${expectedStr}]`;
+            } else {
+                res.className = "text-[11px] font-semibold text-rose-400";
+                res.innerText = `❌ SALAH. Jawaban benar adalah [${expectedStr}]`;
+            }
+        }
+
+
+        /* ==================== TAB 4: CHORD DHT & FINGER TABLE LOGIC ==================== */
+        function calculateChord() {
+            state.chordM = parseInt(document.getElementById('chord-m-bits').value);
+            const activeStr = document.getElementById('chord-active-nodes').value;
+            
+            const maxVal = Math.pow(2, state.chordM);
+            const parsed = activeStr.split(',')
+                .map(s => parseInt(s.trim()))
+                .filter(n => !isNaN(n) && n >= 0 && n < maxVal);
+
+            // Deduplicate and sort
+            state.chordActiveNodes = Array.from(new Set(parsed)).sort((a,b) => a - b);
+
+            if (state.chordActiveNodes.length === 0) {
+                state.chordActiveNodes = [0];
+            }
+
+            // Populate node selectors
+            const selNode = document.getElementById('chord-selected-node');
+            const startNodeSel = document.getElementById('lookup-start-node');
+            selNode.innerHTML = '';
+            startNodeSel.innerHTML = '';
+
+            state.chordActiveNodes.forEach(node => {
+                selNode.innerHTML += `<option value="${node}">Node ${node}</option>`;
+                startNodeSel.innerHTML += `<option value="${node}">Node ${node}</option>`;
+            });
+
+            // Compute Finger Tables for all active nodes
+            state.chordFingerTables = {};
+            state.chordActiveNodes.forEach(node => {
+                state.chordFingerTables[node] = generateFingerTableForNode(node, state.chordM, state.chordActiveNodes);
+            });
+
+            renderChordRingSVG();
+            renderFingerTableDetails();
+        }
+
+        function findSuccessor(k, activeNodes, m) {
+            const numRing = Math.pow(2, m);
+            k = (k % numRing + numRing) % numRing; // Normalise
+            for (let i = 0; i < activeNodes.length; i++) {
+                if (activeNodes[i] >= k) {
+                    return activeNodes[i];
+                }
+            }
+            // Wrap around to first active node
+            return activeNodes[0];
+        }
+
+        function generateFingerTableForNode(n, m, activeNodes) {
+            const table = [];
+            const numRing = Math.pow(2, m);
+
+            for (let i = 1; i <= m; i++) {
+                const start = (n + Math.pow(2, i - 1)) % numRing;
+                const end = (n + Math.pow(2, i)) % numRing;
+                const succ = findSuccessor(start, activeNodes, m);
+
+                table.push({
+                    i: i,
+                    start: start,
+                    interval: `[${start}, ${end})`,
+                    successor: succ
+                });
+            }
+            return table;
+        }
+
+        function renderFingerTableDetails() {
+            const selectedNode = parseInt(document.getElementById('chord-selected-node').value);
+            document.getElementById('finger-table-node-id').innerText = selectedNode;
+
+            const tbody = document.getElementById('finger-table-body');
+            tbody.innerHTML = '';
+
+            const tableData = state.chordFingerTables[selectedNode];
+            if (!tableData) return;
+
+            tableData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2 text-slate-400">${row.i}</td>
+                    <td class="p-2 font-bold text-white">${row.start}</td>
+                    <td class="p-2 text-slate-400">${row.interval}</td>
+                    <td class="p-2 font-bold text-amber-400">Node ${row.successor}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderChordRingSVG() {
+            const container = document.getElementById('chord-ring-svg-container');
+            const m = state.chordM;
+            const numRing = Math.pow(2, m);
+            const activeNodes = state.chordActiveNodes;
+
+            const size = 220;
+            const center = size / 2;
+            const radius = 80;
+
+            let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+            
+            // Outer Circle Ring
+            svg += `<circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="#334155" stroke-width="2" stroke-dasharray="3 3"/>`;
+
+            // Draw all ring slots
+            for (let i = 0; i < numRing; i++) {
+                const angle = (i / numRing) * 2 * Math.PI - Math.PI / 2;
+                const cx = center + radius * Math.cos(angle);
+                const cy = center + radius * Math.sin(angle);
+
+                const isActive = activeNodes.includes(i);
+                const fillColor = isActive ? '#f59e0b' : '#1e293b';
+                const strokeColor = isActive ? '#ffffff' : '#475569';
+                const r = isActive ? 10 : 5;
+
+                svg += `
+                    <g class="cursor-pointer">
+                        <circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="1.5" />
+                        <text x="${cx}" y="${cy + (isActive ? 16 : 12)}" text-anchor="middle" fill="${isActive ? '#fbbf24' : '#64748b'}" font-size="${isActive ? '10' : '8'}" font-family="Fira Code" font-weight="bold">${i}</text>
+                    </g>
+                `;
+            }
+
+            svg += `</svg>`;
+            container.innerHTML = svg;
+        }
+
+        function simulateChordLookup() {
+            const startNode = parseInt(document.getElementById('lookup-start-node').value);
+            const targetKey = parseInt(document.getElementById('lookup-target-key').value);
+            const m = state.chordM;
+            const numRing = Math.pow(2, m);
+            const activeNodes = state.chordActiveNodes;
+
+            const logBox = document.getElementById('chord-lookup-log-box');
+            const stepsContainer = document.getElementById('chord-lookup-steps');
+            logBox.classList.remove('hidden');
+            stepsContainer.innerHTML = '';
+
+            let currNode = startNode;
+            let hops = 0;
+            let traceHTML = '';
+
+            const finalSuccessor = findSuccessor(targetKey, activeNodes, m);
+
+            while (currNode !== finalSuccessor && hops < 10) {
+                hops++;
+                const ft = state.chordFingerTables[currNode];
+                
+                // Find highest successor in finger table that precedes key
+                let nextNode = ft[0].successor;
+                for (let i = m - 1; i >= 0; i--) {
+                    const succ = ft[i].successor;
+                    // Check if succ is between currNode and targetKey
+                    if (isBetween(succ, currNode, targetKey, numRing)) {
+                        nextNode = succ;
+                        break;
+                    }
+                }
+
+                if (nextNode === currNode) {
+                    nextNode = finalSuccessor;
+                }
+
+                traceHTML += `
+                    <div class="p-2 bg-slate-950 rounded border border-slate-800 flex items-center justify-between text-slate-300">
+                        <span>Hop ${hops}: Node <b class="text-white">${currNode}</b> memeriksa Finger Table → forward ke <b class="text-amber-400">Node ${nextNode}</b></span>
+                        <i class="fa-solid fa-arrow-right text-slate-600"></i>
+                    </div>
+                `;
+                currNode = nextNode;
+            }
+
+            traceHTML += `
+                <div class="p-2.5 bg-emerald-950/80 rounded border border-emerald-500 text-emerald-200 font-bold flex items-center justify-between">
+                    <span>🎉 Key ${targetKey} DITEMUKAN pada Node ${finalSuccessor}! (Total: ${hops} Hops)</span>
+                    <i class="fa-solid fa-check-circle text-emerald-400 text-base"></i>
+                </div>
+            `;
+
+            stepsContainer.innerHTML = traceHTML;
+        }
+
+        function isBetween(val, start, end, numRing) {
+            if (start < end) {
+                return val > start && val < end;
+            } else {
+                return val > start || val < end;
+            }
+        }
+
+
+        /* ==================== TAB 5: CONSISTENCY MODEL ANALYZER ==================== */
+        function loadConsistencyPreset(scenarioNum) {
+            const input = document.getElementById('consistency-trace-input');
+            if (scenarioNum === 1) {
+                input.value = `P1: W(x)a\nP2: R(x)a W(x)b\nP3: R(x)a R(x)b`;
+            } else if (scenarioNum === 2) {
+                input.value = `P1: W(x)a\nP2: W(x)b\nP3: R(x)b R(x)a\nP4: R(x)a R(x)b`;
+            } else if (scenarioNum === 3) {
+                input.value = `P1: W(x)a\nP2: R(x)a W(x)b\nP3: R(x)b R(x)a`;
+            }
+            analyzeConsistencyTrace();
+        }
+
+        function analyzeConsistencyTrace() {
+            const text = document.getElementById('consistency-trace-input').value.trim();
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+            const seqText = document.getElementById('verdict-sequential-text');
+            const seqIcon = document.getElementById('verdict-sequential-icon');
+            const seqBox = document.getElementById('verdict-sequential-box');
+
+            const causalText = document.getElementById('verdict-causal-text');
+            const causalIcon = document.getElementById('verdict-causal-icon');
+            const causalBox = document.getElementById('verdict-causal-box');
+
+            const expContent = document.getElementById('consistency-explanation-content');
+
+            // Quick rule evaluations for presets or trace analysis
+            if (text.includes("P4: R(x)a R(x)b") && text.includes("P3: R(x)b R(x)a")) {
+                // Scenario 2: Valid Causal, INVALID Sequential
+                seqText.innerText = "INVALID (Melanggar)";
+                seqText.className = "text-base font-bold text-rose-400";
+                seqIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+                seqBox.className = "bg-rose-950/30 p-4 rounded-xl border border-rose-800/60 flex items-center justify-between";
+
+                causalText.innerText = "VALID (Memenuhi)";
+                causalText.className = "text-base font-bold text-emerald-400";
+                causalIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                causalBox.className = "bg-emerald-950/30 p-4 rounded-xl border border-emerald-800/60 flex items-center justify-between";
+
+                expContent.innerHTML = `
+                    <p><b class="text-rose-400">Sequential Consistency (Gagal):</b> P3 melihat nilai <i>'b' dulu baru 'a'</i>, sedangkan P4 melihat <i>'a' dulu baru 'b'</i>. Tidak mungkin dibuat 1 urutan sekuensial global tunggal yang disepakati P3 dan P4 bersamaan.</p>
+                    <p><b class="text-emerald-400">Causal Consistency (Lulus):</b> Karena W(x)a dan W(x)b dilakukan oleh proses berbeda (P1 dan P2) tanpa ada Read perantara, kedua Write bersifat <b>Konkuren</b>. Model kausal memperbolehkan node melihat write konkuren dalam urutan berbeda.</p>
+                `;
+            } else if (text.includes("P2: R(x)a W(x)b") && text.includes("P3: R(x)b R(x)a")) {
+                // Scenario 3: Violation of both
+                seqText.innerText = "INVALID (Melanggar)";
+                seqText.className = "text-base font-bold text-rose-400";
+                seqIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+                seqBox.className = "bg-rose-950/30 p-4 rounded-xl border border-rose-800/60 flex items-center justify-between";
+
+                causalText.innerText = "INVALID (Melanggar Kausalitas)";
+                causalText.className = "text-base font-bold text-rose-400";
+                causalIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+                causalBox.className = "bg-rose-950/30 p-4 rounded-xl border border-rose-800/60 flex items-center justify-between";
+
+                expContent.innerHTML = `
+                    <p><b class="text-rose-400">Pelanggaran Kausalitas Murni:</b> P2 membaca 'a' SEBELUM menulis 'b'. Ini menciptakan ketergantungan kausalitas: <code class="text-indigo-300">W(x)a → R(x)a → W(x)b</code>.</p>
+                    <p>Karena W(x)a menyebabkan W(x)b, SELURUH node wajib melihat 'a' sebelum 'b'. Namun pada P3, ia membaca 'b' DULU baru 'a'. Ini secara telak melanggar <b>Causal Consistency</b> maupun <b>Sequential Consistency</b>.</p>
+                `;
+            } else {
+                // Scenario 1: Valid Both
+                seqText.innerText = "VALID (Memenuhi)";
+                seqText.className = "text-base font-bold text-emerald-400";
+                seqIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                seqBox.className = "bg-emerald-950/30 p-4 rounded-xl border border-emerald-800/60 flex items-center justify-between";
+
+                causalText.innerText = "VALID (Memenuhi)";
+                causalText.className = "text-base font-bold text-emerald-400";
+                causalIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                causalBox.className = "bg-emerald-950/30 p-4 rounded-xl border border-emerald-800/60 flex items-center justify-between";
+
+                expContent.innerHTML = `
+                    <p><b class="text-emerald-400">Semua Model Konsistensi Valid:</b> Urutan interleaved global <code class="text-indigo-300 font-mono">W(x)a → R(x)a → W(x)b → R(x)a → R(x)b</code> konsisten dan mematuhi urutan program lokal masing-masing proses.</p>
+                `;
+            }
+        }
+
+        /* ==================== DEPLOY MODAL LOGIC ==================== */
+        function openDeployModal() {
+            document.getElementById('deploy-modal').classList.remove('hidden');
+        }
+
+        function closeDeployModal() {
+            document.getElementById('deploy-modal').classList.add('hidden');
+        }
+
+        function downloadHTMLFile() {
+            const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        /* ==================== APP INITIALIZATION ==================== */
+        window.onload = function() {
+            renderQuizQuestion();
+            initClockSimulator();
+            calculateChord();
+            analyzeConsistencyTrace();
+        };
+    </script>
+</body>
+</html>
